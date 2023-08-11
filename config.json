@@ -1,7 +1,7 @@
 {
-  "slowPercentage": 0.8,
-  "fastPercentage": 0.2,
-  "slowFactor": 0.5,
-  "middleFactor": 1,
-  "fastFactor": 2
+  "slow_percentage": 0.8,
+  "fast_percentage": 0.2,
+  "slow_factor": 0.5,
+  "middle_factor": 1,
+  "fast_factor": 2
 }
