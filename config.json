@@ -1,7 +1,9 @@
 {
-  "slow_percentage": 0.8,
-  "fast_percentage": 0.2,
+  "slow_percentage": 0.5,
+  "fast_percentage": 0.5,
   "slow_factor": 0.5,
   "middle_factor": 1,
-  "fast_factor": 2
+  "fast_factor": 2,
+  "audio_offset": 0.03,
+  "video_offset": 0.0
 }

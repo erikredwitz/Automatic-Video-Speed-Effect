@@ -2,7 +2,6 @@ from random import randint
 
 import librosa
 from moviepy.editor import VideoFileClip, concatenate, AudioFileClip
-from moviepy.video.fx import speedx
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 import json
@@ -19,6 +18,8 @@ def apply_speed_ramp(video, audio, timestamps):
     slow_factor = data["slow_factor"]
     middle_factor = data["middle_factor"]
     fast_factor = data["fast_factor"]
+    audio_offset = data["audio_offset"]
+    video_offset = data["video_offset"]
     video = VideoFileClip(video)
     audio = AudioFileClip(audio)
     clips = []
@@ -34,7 +35,10 @@ def apply_speed_ramp(video, audio, timestamps):
     for audio_timestamp in timestamps:
         audio_section_end = audio_timestamp
         audio_section_length = audio_section_end - audio_section_start
-        slow_video_start = fast_video_end
+        if fast_video_end != 0:
+            slow_video_start = fast_video_end + video_offset
+        else:
+            slow_video_start = 0
         middle_video_start = slow_video_start + audio_section_length * slow_percentage * slow_factor
         fast_video_start = middle_video_start + audio_section_length * (
                 1 - slow_percentage - fast_percentage) * middle_factor
@@ -61,6 +65,8 @@ def apply_speed_ramp(video, audio, timestamps):
         audio_section_start = audio_section_end
 
     final_clip = concatenate(clips)
+    if audio_offset != 0:
+        final_clip = final_clip.subclip(t_start=audio_offset)
     if audio_subclip_end != 0:
         final_clip = final_clip.set_audio(audio.subclip(0, audio_subclip_end))  # Set the audio from the audio file
     else:
