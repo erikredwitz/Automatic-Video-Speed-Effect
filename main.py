@@ -1,6 +1,7 @@
 from random import randint
 
 import librosa
+# moviepy-1.0.3 necessary for this - not later version
 from moviepy.editor import VideoFileClip, concatenate, AudioFileClip
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
