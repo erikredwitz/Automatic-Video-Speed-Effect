@@ -23,7 +23,7 @@ def apply_speed_ramp(video, audio, timestamps):
     audio = AudioFileClip(audio)
     clips = []
     print("video: " + str(video.fps) + " fps, audio: " + str(audio.fps) + " fps")
-    audio_section_start = 0.0
+    audio_section_start = video_offset
     audio_section_end = 0.0
     slow_video_start = 0.0
     fast_video_start = 0.0
@@ -33,11 +33,9 @@ def apply_speed_ramp(video, audio, timestamps):
     for audio_timestamp in timestamps:
         audio_section_end = audio_timestamp
         audio_section_length = audio_section_end - audio_section_start
-        if fast_video_end != 0:
-            slow_video_start = fast_video_end + video_offset
-        else:
-            slow_video_start = 0
-        fast_video_start = slow_video_start + audio_section_length - speed_duration
+        if audio_section_length < speed_duration:
+            continue
+        fast_video_start = slow_video_start + (audio_section_length - speed_duration)*slow_factor
         if fast_video_start > video.duration:
             fast_video_start = video.duration
             is_video_end_reached = True
@@ -45,7 +43,7 @@ def apply_speed_ramp(video, audio, timestamps):
         clips.append(slow_clip)
         if is_video_end_reached:
             break
-        fast_video_end = slow_video_start + audio_section_length
+        fast_video_end = fast_video_start + speed_duration * fast_factor
         if fast_video_end > video.duration:
             fast_video_end = video.duration
             is_video_end_reached = True
@@ -53,6 +51,7 @@ def apply_speed_ramp(video, audio, timestamps):
         clips.append(fast_clip)
         if is_video_end_reached:
             break
+        slow_video_start = fast_video_end
         i = i + 1
         if i % 10 == 0:
             print("audio: " + str(round(100 * i / len(audio_timestamps), ndigits=1)) + "%, video: " + str(
@@ -62,8 +61,7 @@ def apply_speed_ramp(video, audio, timestamps):
     final_clip = concatenate(clips)
     if audio_offset != 0:
         final_clip = final_clip.subclip(t_start=audio_offset)
-    else:
-        final_clip = final_clip.set_audio(audio)  # Set the audio from the audio file
+    final_clip = final_clip.set_audio(audio.subclip(t_end=final_clip.duration))  # Set the audio from the audio file
     final_clip.write_videofile("output_files/output" + str(randint(1, 10000000)) + ".mp4",
                                codec="libx264",
                                audio_codec="aac")
