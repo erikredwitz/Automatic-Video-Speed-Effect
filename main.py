@@ -16,7 +16,6 @@ def apply_speed_ramp(video, audio, timestamps):
     # Set the variables from the JSON data
     speed_duration = data["speed_duration"]
     slow_factor = data["slow_factor"]
-    middle_factor = data["middle_factor"]
     fast_factor = data["fast_factor"]
     audio_offset = data["audio_offset"]
     video_offset = data["video_offset"]
