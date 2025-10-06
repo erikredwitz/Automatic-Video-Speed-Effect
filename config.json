@@ -1,8 +1,6 @@
 {
-  "slow_percentage": 0.5,
-  "fast_percentage": 0.5,
+  "speed_duration": 0.5,
   "slow_factor": 0.5,
-  "middle_factor": 1,
   "fast_factor": 2,
   "audio_offset": 0.03,
   "video_offset": 0.0
