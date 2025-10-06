@@ -45,6 +45,7 @@ def apply_speed_ramp(video, audio, timestamps):
         clips.append(slow_clip)
         if is_video_end_reached:
             break
+        fast_video_end = slow_video_start + audio_section_length
         if fast_video_end > video.duration:
             fast_video_end = video.duration
             is_video_end_reached = True
