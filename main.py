@@ -19,33 +19,39 @@ def apply_speed_ramp(video, audio, timestamps):
     fast_factor = data["fast_factor"]
     audio_offset = data["audio_offset"]
     video_offset = data["video_offset"]
+    video_start_seconds = data["video_start_seconds"]
+    video_end_seconds = data["video_end_seconds"]
     video = VideoFileClip(video)
     audio = AudioFileClip(audio)
     clips = []
     print("video: " + str(video.fps) + " fps, audio: " + str(audio.fps) + " fps")
     audio_section_start = video_offset
     audio_section_end = 0.0
-    slow_video_start = 0.0
+    slow_video_start = video_start_seconds
     fast_video_start = 0.0
     fast_video_end = 0.0
     is_video_end_reached = False
     i = 0
+    if video_end_seconds < 0 or video_end_seconds > video.duration:
+        video_end_seconds = video.duration
+    if video_start_seconds < 0 or video_start_seconds > video_end_seconds:
+        video_start_seconds = 0
     for audio_timestamp in timestamps:
         audio_section_end = audio_timestamp
         audio_section_length = audio_section_end - audio_section_start
         if audio_section_length < speed_duration:
             continue
         fast_video_start = slow_video_start + (audio_section_length - speed_duration)*slow_factor
-        if fast_video_start > video.duration:
-            fast_video_start = video.duration
+        if fast_video_start > video_end_seconds:
+            fast_video_start = video_end_seconds
             is_video_end_reached = True
         slow_clip = video.subclip(slow_video_start, fast_video_start).speedx(factor=slow_factor)
         clips.append(slow_clip)
         if is_video_end_reached:
             break
         fast_video_end = fast_video_start + speed_duration * fast_factor
-        if fast_video_end > video.duration:
-            fast_video_end = video.duration
+        if fast_video_end > video_end_seconds:
+            fast_video_end = video_end_seconds
             is_video_end_reached = True
         fast_clip = video.subclip(fast_video_start, fast_video_end).speedx(factor=fast_factor)
         clips.append(fast_clip)
@@ -55,7 +61,7 @@ def apply_speed_ramp(video, audio, timestamps):
         i = i + 1
         if i % 10 == 0:
             print("audio: " + str(round(100 * i / len(audio_timestamps), ndigits=1)) + "%, video: " + str(
-                round(100 * fast_video_end / video.duration, ndigits=1)) + " %")
+                round(100 * (fast_video_end - video_start_seconds) / (video_end_seconds - video_start_seconds), ndigits=1)) + " %")
         audio_section_start = audio_section_end
 
     final_clip = concatenate(clips)

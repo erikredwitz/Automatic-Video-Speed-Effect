@@ -1,7 +1,9 @@
 {
-  "speed_duration": 0.1,
+  "speed_duration": 0.2,
   "slow_factor": 0.5,
   "fast_factor": 2,
-  "audio_offset": 0.03,
-  "video_offset": 0.0
+  "audio_offset": 0.06,
+  "video_offset": 0.0,
+  "video_start_seconds": 140.0,
+  "video_end_seconds": 170.0
 }
